@@ -3,17 +3,20 @@
     {
       "id": "1",
       "title": "a title",
-      "views": 100
+      "views": 100,
+      "isDeleted": false
     },
     {
       "id": "2",
       "title": "another title",
-      "views": 200
+      "views": 200,
+      "isDeleted": false
     },
     {
       "title": "heheeh",
       "views": "20000",
-      "id": "3"
+      "id": "3",
+      "isDeleted": false
     }
   ],
   "comments": [
