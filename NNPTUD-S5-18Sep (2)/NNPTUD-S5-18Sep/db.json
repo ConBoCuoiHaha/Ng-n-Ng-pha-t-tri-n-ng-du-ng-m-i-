@@ -1,0 +1,39 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "a title",
+      "views": 100
+    },
+    {
+      "id": "2",
+      "title": "another title",
+      "views": 200
+    },
+    {
+      "title": "haha",
+      "views": 20,
+      "id": "3"
+    },
+    {
+      "id": "4",
+      "title": "huhu",
+      "views": 5000
+    },
+    {
+      "id": "5",
+      "title": "dasdadad",
+      "views": 1234
+    },
+    {
+      "id": "6",
+      "title": "123",
+      "views": 123
+    },
+    {
+      "id": "7",
+      "title": "123",
+      "views": 123
+    }
+  ]
+}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts Manager - NNPTUD-S5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .slider-container {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 60px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            background: #e9ecef;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2196F3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            background: #1976D2;
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2196F3;
+            cursor: pointer;
+            border: none;
+        }
+
+        .value-display {
+            background: #2196F3;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .posts-container {
+            padding: 30px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .post-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .post-id {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .post-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .post-views {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .stats {
+            background: #e9ecef;
+            padding: 20px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2196F3;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .slider-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Posts Manager</h1>
+            <p>Quản lý và tìm kiếm bài viết với gợi ý thông minh</p>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalPosts">0</div>
+                <div class="stat-label">Tổng bài viết</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="filteredPosts">0</div>
+                <div class="stat-label">Đang hiển thị</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalViews">0</div>
+                <div class="stat-label">Tổng lượt xem</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput" 
+                        placeholder="🔍 Tìm kiếm theo tiêu đề..."
+                        autocomplete="off"
+                    >
+                    <div class="suggestions" id="suggestions"></div>
+                </div>
+                <button class="btn btn-secondary" onclick="clearSearch()">Xóa tìm kiếm</button>
+            </div>
+
+            <div class="control-group">
+                <div class="slider-container">
+                    <div class="slider-group">
+                        <label class="slider-label">Từ:</label>
+                        <input 
+                            type="range" 
+                            class="slider" 
+                            id="minViewsSlider" 
+                            min="0" 
+                            max="5000" 
+                            value="0"
+                        >
+                        <div class="value-display" id="minViewsValue">0</div>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-group">
+                        <label class="slider-label">Đến:</label>
+                        <input 
+                            type="range" 
+                            class="slider" 
+                            id="maxViewsSlider" 
+                            min="0" 
+                            max="5000" 
+                            value="5000"
+                        >
+                        <div class="value-display" id="maxViewsValue">5000</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="loadPosts()">🔄 Làm mới</button>
+            </div>
+        </div>
+
+        <div class="posts-container">
+            <div id="loadingIndicator" class="loading" style="display: none;">
+                <p>⏳ Đang tải dữ liệu...</p>
+            </div>
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            <div id="postsGrid" class="posts-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Biến toàn cục
+        let allPosts = [];
+        let filteredPosts = [];
+        let currentSuggestions = [];
+
+        // Khởi tạo ứng dụng
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSliders();
+            loadPosts();
+            setupSearchFunctionality();
+        });
+
+        // Thiết lập chức năng tìm kiếm
+        function setupSearchFunctionality() {
+            const searchInput = document.getElementById('searchInput');
+            const suggestions = document.getElementById('suggestions');
+
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+                
+                if (query.length >= 2) {
+                    showSuggestions(query);
+                } else {
+                    hideSuggestions();
+                }
+            });
+
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                } else if (e.key === 'Escape') {
+                    hideSuggestions();
+                }
+            });
+
+            // Ẩn suggestions khi click ra ngoài
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    hideSuggestions();
+                }
+            });
+        }
+
+        // Hiển thị gợi ý tìm kiếm
+        function showSuggestions(query) {
+            const suggestions = document.getElementById('suggestions');
+            
+            // Lọc các title chứa query
+            const matches = allPosts
+                .map(post => post.title)
+                .filter(title => title.toLowerCase().includes(query.toLowerCase()))
+                .slice(0, 5); // Chỉ hiển thị 5 gợi ý
+
+            if (matches.length > 0) {
+                currentSuggestions = matches;
+                suggestions.innerHTML = matches
+                    .map(match => `<div class="suggestion-item" onclick="selectSuggestion('${match}')">${match}</div>`)
+                    .join('');
+                suggestions.style.display = 'block';
+            } else {
+                hideSuggestions();
+            }
+        }
+
+        // Ẩn gợi ý
+        function hideSuggestions() {
+            document.getElementById('suggestions').style.display = 'none';
+            currentSuggestions = [];
+        }
+
+        // Chọn gợi ý
+        function selectSuggestion(suggestion) {
+            document.getElementById('searchInput').value = suggestion;
+            hideSuggestions();
+            performSearch();
+        }
+
+        // Thực hiện tìm kiếm
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            filterAndDisplayPosts(query);
+        }
+
+        // Xóa tìm kiếm
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            hideSuggestions();
+            filterAndDisplayPosts('');
+        }
+
+        // Khởi tạo sliders
+        function initializeSliders() {
+            const minSlider = document.getElementById('minViewsSlider');
+            const maxSlider = document.getElementById('maxViewsSlider');
+            const minValue = document.getElementById('minViewsValue');
+            const maxValue = document.getElementById('maxViewsValue');
+
+            minSlider.addEventListener('input', function() {
+                const minVal = parseInt(this.value);
+                const maxVal = parseInt(maxSlider.value);
+                
+                if (minVal > maxVal) {
+                    maxSlider.value = minVal;
+                    maxValue.textContent = minVal;
+                }
+                
+                minValue.textContent = minVal;
+                applyFilters();
+            });
+
+            maxSlider.addEventListener('input', function() {
+                const maxVal = parseInt(this.value);
+                const minVal = parseInt(minSlider.value);
+                
+                if (maxVal < minVal) {
+                    minSlider.value = maxVal;
+                    minValue.textContent = maxVal;
+                }
+                
+                maxValue.textContent = maxVal;
+                applyFilters();
+            });
+        }
+
+        // Sử dụng Fetch API để đọc dữ liệu từ server
+        async function loadPosts() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            try {
+                loadingIndicator.style.display = 'block';
+                errorMessage.style.display = 'none';
+
+                const response = await fetch('http://localhost:3000/posts');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const posts = await response.json();
+                allPosts = posts;
+                filteredPosts = [...posts];
+                
+                displayPosts(filteredPosts);
+                updateStats();
+                
+            } catch (error) {
+                console.error('Lỗi khi tải dữ liệu:', error);
+                errorMessage.textContent = `❌ Lỗi khi tải dữ liệu: ${error.message}. Vui lòng kiểm tra server có đang chạy không.`;
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        // Lọc và hiển thị posts
+        function filterAndDisplayPosts(searchQuery = '') {
+            const minViews = parseInt(document.getElementById('minViewsSlider').value);
+            const maxViews = parseInt(document.getElementById('maxViewsSlider').value);
+            
+            filteredPosts = allPosts.filter(post => {
+                const matchesSearch = searchQuery === '' || 
+                    post.title.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesViews = post.views >= minViews && post.views <= maxViews;
+                
+                return matchesSearch && matchesViews;
+            });
+            
+            displayPosts(filteredPosts);
+            updateStats();
+        }
+
+        // Áp dụng bộ lọc
+        function applyFilters() {
+            const searchQuery = document.getElementById('searchInput').value.trim();
+            filterAndDisplayPosts(searchQuery);
+        }
+
+        // Hiển thị posts
+        function displayPosts(posts) {
+            const postsGrid = document.getElementById('postsGrid');
+            
+            if (posts.length === 0) {
+                postsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>😔 Không tìm thấy bài viết nào</h3>
+                        <p>Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm</p>
+                    </div>
+                `;
+                return;
+            }
+
+            postsGrid.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-id">ID: ${post.id}</div>
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-views">👁️ ${post.views.toLocaleString()} lượt xem</div>
+                </div>
+            `).join('');
+        }
+
+        // Cập nhật thống kê
+        function updateStats() {
+            document.getElementById('totalPosts').textContent = allPosts.length;
+            document.getElementById('filteredPosts').textContent = filteredPosts.length;
+            
+            const totalViews = filteredPosts.reduce((sum, post) => sum + post.views, 0);
+            document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+        }
+
+        // Hàm tiện ích để format số
+        function formatNumber(num) {
+            return new Intl.NumberFormat('vi-VN').format(num);
+        }
+    </script>
+</body>
+</html>
